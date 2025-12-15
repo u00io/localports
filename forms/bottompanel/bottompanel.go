@@ -27,5 +27,5 @@ func (c *BottomPanel) HandleSystemEvent(event system.Event) {
 }
 
 func (c *BottomPanel) OnAboutClicked() {
-	ui.ShowAboutDialog("About", "LocalPorts", "", "", "GeoLite2 data © MaxMind")
+	ui.ShowAboutDialog("About", "LocalPorts v0.2.2", "", "", "GeoLite2 data © MaxMind")
 }
