@@ -2,6 +2,11 @@ package system
 
 import (
 	"sync"
+	"syscall"
+	"time"
+	"unsafe"
+
+	"golang.org/x/sys/windows"
 )
 
 type System struct {
@@ -11,6 +16,8 @@ type System struct {
 
 	filterType   string
 	filterStatus string
+
+	processNamesById map[uint32]string
 }
 
 type Event struct {
@@ -26,9 +33,48 @@ func NewSystem() *System {
 }
 
 func (c *System) Start() {
+	go c.thUpdateProcesses()
 }
 
 func (c *System) Stop() {
+}
+
+func (c *System) thUpdateProcesses() {
+	for {
+		c.updateProcesses()
+		time.Sleep(1 * time.Second)
+	}
+}
+
+func (c *System) updateProcesses() {
+	result := make(map[uint32]string)
+
+	handle, err := windows.CreateToolhelp32Snapshot(windows.TH32CS_SNAPPROCESS, 0)
+	if err == nil {
+		var entry windows.ProcessEntry32
+		entry.Size = uint32(unsafe.Sizeof(entry))
+		err = windows.Process32First(handle, &entry)
+		for err == nil {
+			nameSize := 0
+			for i := 0; i < 260; i++ {
+				if entry.ExeFile[nameSize] == 0 {
+					break
+				}
+				nameSize++
+			}
+
+			id := int(entry.ProcessID)
+			name := syscall.UTF16ToString(entry.ExeFile[:nameSize])
+			result[uint32(id)] = name
+			err = windows.Process32Next(handle, &entry)
+		}
+
+		_ = windows.CloseHandle(handle)
+	}
+
+	c.mtx.Lock()
+	c.processNamesById = result
+	c.mtx.Unlock()
 }
 
 func (c *System) SetFilterType(filterType string) {
@@ -86,6 +132,16 @@ func (c *System) IsLocalAreaNetwork(ip string) bool {
 		}
 	}
 	return false
+}
+
+func (c *System) GetProcessName(pid uint32) string {
+	result := "?"
+	c.mtx.Lock()
+	if name, ok := c.processNamesById[pid]; ok {
+		result = name
+	}
+	c.mtx.Unlock()
+	return result
 }
 
 func (c *System) GetServiceByPort(port uint16) string {

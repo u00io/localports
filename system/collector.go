@@ -102,37 +102,7 @@ func tcpStateToString(state uint32) string {
 }
 
 func processName(pid uint32) string {
-	h, err := windows.OpenProcess(
-		windows.PROCESS_QUERY_LIMITED_INFORMATION,
-		false,
-		pid,
-	)
-	if err != nil {
-		return "?"
-	}
-	defer windows.CloseHandle(h)
-
-	var size uint32 = windows.MAX_PATH
-	buf := make([]uint16, size)
-
-	err = windows.QueryFullProcessImageName(
-		h,
-		0,
-		&buf[0],
-		&size,
-	)
-	if err != nil {
-		return "?"
-	}
-
-	full := windows.UTF16ToString(buf[:size])
-
-	for i := len(full) - 1; i >= 0; i-- {
-		if full[i] == '\\' || full[i] == '/' {
-			return full[i+1:]
-		}
-	}
-	return full
+	return Instance.GetProcessName(pid)
 }
 
 // --------------------

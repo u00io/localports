@@ -41,6 +41,16 @@ func NewCenterPanel() *CenterPanel {
 
 	c.tableResults.SetColumnCount(9)
 	c.tableResults.SetColumnName(0, "Type")
+	c.tableResults.SetColumnName(1, "Local Port")
+	c.tableResults.SetColumnName(2, "Local Address")
+	c.tableResults.SetColumnName(3, "Remote Address")
+	c.tableResults.SetColumnName(4, "Remote Port")
+	c.tableResults.SetColumnName(5, "Status")
+	c.tableResults.SetColumnName(6, "PID")
+	c.tableResults.SetColumnName(7, "Program")
+	c.tableResults.SetColumnName(8, "Service")
+
+	/*c.tableResults.SetColumnName(0, "Type")
 	c.tableResults.SetColumnName(1, "Port")
 	c.tableResults.SetColumnName(2, "Status")
 	c.tableResults.SetColumnName(3, "PID")
@@ -49,15 +59,15 @@ func NewCenterPanel() *CenterPanel {
 	c.tableResults.SetColumnName(5, "Remote Address")
 	c.tableResults.SetColumnName(6, "Remote Port")
 	c.tableResults.SetColumnName(7, "Local Address")
-	c.tableResults.SetColumnName(8, "Service")
+	c.tableResults.SetColumnName(8, "Service")*/
 
 	c.tableResults.SetColumnWidth(0, 100)
-	c.tableResults.SetColumnWidth(1, 100)
+	c.tableResults.SetColumnWidth(1, 140)
 	c.tableResults.SetColumnWidth(2, 200)
-	c.tableResults.SetColumnWidth(3, 100)
-	c.tableResults.SetColumnWidth(4, 200)
-	c.tableResults.SetColumnWidth(5, 200)
-	c.tableResults.SetColumnWidth(6, 130)
+	c.tableResults.SetColumnWidth(3, 200)
+	c.tableResults.SetColumnWidth(4, 140)
+	c.tableResults.SetColumnWidth(5, 140)
+	c.tableResults.SetColumnWidth(6, 100)
 	c.tableResults.SetColumnWidth(7, 200)
 	c.tableResults.SetColumnWidth(8, 200)
 
@@ -125,31 +135,36 @@ func (c *CenterPanel) updateData() {
 
 	c.tableResults.SetRowCount(len(conns))
 	for i, conn := range conns {
+
 		c.tableResults.SetCellText2(i, 0, conn.Protocol)
 		c.tableResults.SetCellText2(i, 1, fmt.Sprintf("%d", conn.LocalPort))
-		c.tableResults.SetCellText2(i, 2, conn.State)
-		c.tableResults.SetCellText2(i, 3, fmt.Sprintf("%d", conn.PID))
-		c.tableResults.SetCellText2(i, 4, conn.ProcessName)
+		c.tableResults.SetCellText2(i, 5, conn.State)
+		c.tableResults.SetCellText2(i, 6, fmt.Sprintf("%d", conn.PID))
+		c.tableResults.SetCellText2(i, 7, conn.ProcessName)
 
-		c.tableResults.SetCellText2(i, 5, conn.RemoteAddr)
-		c.tableResults.SetCellColor(i, 5, ui.ColorFromHex("#E57373"))
+		c.tableResults.SetCellText2(i, 3, conn.RemoteAddr)
+		c.tableResults.SetCellColor(i, 3, ui.ColorFromHex("#E57373"))
+
+		if conn.State == "LISTEN" {
+			c.tableResults.SetCellText2(i, 3, "")
+		}
 
 		if conn.RemoteAddr == "0.0.0.0" || conn.RemoteAddr == "::" || conn.RemoteAddr == "127.0.0.1" {
-			c.tableResults.SetCellColor(i, 5, color.RGBA{100, 100, 100, 255})
+			c.tableResults.SetCellColor(i, 3, color.RGBA{100, 100, 100, 255})
 		}
 
 		if system.Instance.IsLocalAreaNetwork(conn.RemoteAddr) {
-			c.tableResults.SetCellColor(i, 5, color.RGBA{100, 255, 100, 255})
+			c.tableResults.SetCellColor(i, 3, color.RGBA{100, 255, 100, 255})
 		}
 
 		if conn.RemotePort > 0 {
-			c.tableResults.SetCellText2(i, 6, fmt.Sprintf("%d", conn.RemotePort))
+			c.tableResults.SetCellText2(i, 4, fmt.Sprintf("%d", conn.RemotePort))
 		} else {
-			c.tableResults.SetCellText2(i, 6, "")
+			c.tableResults.SetCellText2(i, 4, "")
 		}
 
-		c.tableResults.SetCellText2(i, 7, conn.LocalAddr)
-		c.tableResults.SetCellColor(i, 7, color.RGBA{100, 100, 100, 255})
+		c.tableResults.SetCellText2(i, 2, conn.LocalAddr)
+		c.tableResults.SetCellColor(i, 2, color.RGBA{100, 100, 100, 255})
 
 		service := system.Instance.GetServiceByPort(conn.LocalPort)
 		if service == "" {
