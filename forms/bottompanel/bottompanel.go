@@ -13,7 +13,10 @@ func NewBottomPanel() *BottomPanel {
 	var c BottomPanel
 	c.InitWidget()
 	c.SetLayout(`
-		<label text="Based on NET.U00.IO project" />
+		<row>
+			<hspacer />
+			<button text="About" onclick="OnAboutClicked" />
+		</row>
 	`, &c, nil)
 
 	c.SetElevation(5)
@@ -21,4 +24,8 @@ func NewBottomPanel() *BottomPanel {
 }
 
 func (c *BottomPanel) HandleSystemEvent(event system.Event) {
+}
+
+func (c *BottomPanel) OnAboutClicked() {
+	ui.ShowAboutDialog("About", "LocalPorts", "", "", "GeoLite2 data © MaxMind")
 }

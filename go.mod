@@ -5,8 +5,10 @@ go 1.24.0
 toolchain go1.24.11
 
 require (
+	github.com/oschwald/maxminddb-golang v1.13.1
 	github.com/u00io/gomisc v0.0.1
 	github.com/u00io/nuiforms v0.0.14
+	golang.org/x/sys v0.33.0
 )
 
 require (
@@ -18,7 +20,6 @@ require (
 	golang.org/x/exp/shiny v0.0.0-20250606033433-dcc06ee1d476 // indirect
 	golang.org/x/image v0.34.0 // indirect
 	golang.org/x/mobile v0.0.0-20250606033058-a2a15c67f36f // indirect
-	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.32.0 // indirect
 )
 
