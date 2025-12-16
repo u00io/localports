@@ -7,7 +7,7 @@ toolchain go1.24.11
 require (
 	github.com/oschwald/maxminddb-golang v1.13.1
 	github.com/u00io/gomisc v0.0.1
-	github.com/u00io/nuiforms v0.0.14
+	github.com/u00io/nuiforms v0.0.15
 	golang.org/x/sys v0.33.0
 )
 

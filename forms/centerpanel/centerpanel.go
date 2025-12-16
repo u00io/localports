@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/u00io/localports/flags"
 	"github.com/u00io/localports/system"
 	"github.com/u00io/nuiforms/ui"
 )
@@ -299,5 +300,13 @@ func (c *CenterPanel) updateData() {
 			country = ""
 		}
 		c.tableResults.SetCellText2(i, 9, country)
+
+		countryISO, err := system.GetCountryISOCodeByIP(conn.RemoteAddr)
+		if err == nil && countryISO != "" {
+			im, _ := flags.GetFlagImage(countryISO)
+			c.tableResults.SetCellImage(i, 9, im, 24)
+		} else {
+			c.tableResults.SetCellImage(i, 9, nil, 0)
+		}
 	}
 }
